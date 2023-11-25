@@ -2,9 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userModel = require("../models/Users");
 const groupModel = require("../models/Group");
-const expenseController = require("../controllers/expenseController");
 const expenseModel = require("../models/Expense");
-const expenseCalculator = require("../expenseCalculations/expenseCalculator");
 const dbOperations = require("../expenseCalculations/databaseOperations");
 router.use(express.json());
 
