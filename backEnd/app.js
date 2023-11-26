@@ -5,6 +5,9 @@ const helmet = require("helmet");
 
 const mongoose = require("mongoose");
 const spiltterRouter = require("./routes/routes.js");
+
+// Use CORS middleware
+app.use(cors());
 app.use("/splitter", spiltterRouter);
 // const pass = configiration.password;
 const uri =

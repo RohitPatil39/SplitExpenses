@@ -135,7 +135,12 @@ this.getExpenses = async function (gid) {
 
 this.getGroups = async function (uid) {
     const existingUser = await userModel.findOne({ uid });
-    return existingUser.groups;
+    const groupIds = existingUser.groups;
+    var groups = [];
+    for (const gid of groupIds) {
+        groups.push(await groupModel.findById(gid));
+    }
+    return groups;
 }
 
 this.addPaymentGraph = async function (gid) {
