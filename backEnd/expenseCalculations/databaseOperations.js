@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userModel = require("../models/Users");
 const groupModel = require("../models/Group");
+const expenseModel = require("../models/Expense");
 
 
 this.addExpenseToGroup = async function (gid, eid, uid, amount) {
@@ -9,28 +10,46 @@ this.addExpenseToGroup = async function (gid, eid, uid, amount) {
         const existingGroup = await groupModel.findById(gid);
         existingGroup.expenses.push(eid);
 
-        var groupUsers = existingGroup.users;
+        var groupUserIds = existingGroup.users;
+        var groupUsers = [];
+        for (const uid of groupUserIds) {
+            groupUsers.push(await userModel.findOne({ uid }));
+        }
         var userBalances = existingGroup.userBalances || [];
 
         var totalMembers = groupUsers.length;
+        // console.log(totalMembers)
         var splitAmount = amount / totalMembers;
-
+        // console.log()
         for (const user of groupUsers) {
-            if (user !== uid) {
-                var balance = userBalances.find((entry) => entry.uid === user);
-                if (balance) {
-                    balance.balance -= splitAmount;
+            if (user.uid !== uid) {
+                console.log("1")
+                var userbalance = userBalances.find((entry) => entry.uid === user.uid);
+                if (userbalance) {
+                    console.log("2")
+                    userbalance.balance -= splitAmount;
+                    user.balance -= splitAmount;
                 } else {
-                    userBalances.push({ uid: user, balance: -splitAmount });
+                    console.log("3")
+                    userBalances.push({ uid: user.uid, balance: -splitAmount });
+                    user.balance = -splitAmount;
                 }
             } else {
-                var balance = userBalances.find((entry) => entry.uid === user);
-                if (balance) {
-                    balance.balance += amount - splitAmount;
+                console.log("4")
+                var userbalance = userBalances.find((entry) => entry.uid === user.uid);
+                if (userbalance) {
+                    console.log("5")
+                    userbalance.balance += amount - splitAmount;
+                    user.balance += amount - splitAmount;
                 } else {
-                    userBalances.push({ uid: user, balance: amount - splitAmount });
+                    console.log("6")
+                    userBalances.push({ uid: user.uid, balance: amount - splitAmount });
+                    console.log("7")
+                    user.balance = amount - splitAmount;
+                    console.log("8")
                 }
             }
+            user.save();
         }
 
         existingGroup.userBalances = userBalances;
@@ -74,10 +93,6 @@ function makePaymentGraph(gid, group) {
         _id: item._id
     }));
 
-    function createUserNode(uid, balance) {
-        return { uid, balance };
-    }
-
     // Helper function to insert a UserNode into the appropriate list
     function insertUserNode(person, sortedPeople) {
         sortedPeople.push(person);
@@ -93,12 +108,10 @@ function makePaymentGraph(gid, group) {
     while (lenders.length > 0) {
         const sender = popTopUser(borrowers);
         const receiver = popTopUser(lenders);
-
-
         const amountTransferred = Math.min(sender.balance, receiver.balance);
 
         paymentGraph.push(new PaymentNode(sender.uid, receiver.uid, amountTransferred));
-// console.log(paymentGraph)
+
         sender.balance -= amountTransferred;
         receiver.balance -= amountTransferred;
 
@@ -130,7 +143,12 @@ this.addGroupUnderUser = async function (users, gid) {
 
 this.getExpenses = async function (gid) {
     const existingGroup = await groupModel.findById(gid);
-    return existingGroup.expenses;
+    const expenseIds = existingGroup.expenses;
+    var expenses = [];
+    for (const eid of expenseIds) {
+        expenses.push(await expenseModel.findById(eid));
+    }
+    return expenses;
 }
 
 this.getGroups = async function (uid) {
@@ -143,8 +161,24 @@ this.getGroups = async function (uid) {
     return groups;
 }
 
-this.addPaymentGraph = async function (gid) {
-
+this.settleTransaction = async function (transaction) {
+    const existingGroup = await groupModel.findById(transaction.gid);
+    const userBalances = existingGroup.userBalances;
+    const sender = userBalances.filter(user => user.uid === transaction.sender);
+    const receiver = userBalances.filter(user => user.uid === transaction.receiver);
+    var uid = transaction.sender;
+    const user1 = await userModel.findOne({ uid });
+    uid = transaction.receiver;
+    const user2 = await userModel.findOne({ uid });
+    sender[0].balance += transaction.amount;
+    user1.balance = sender[0].balance;
+    receiver[0].balance -= transaction.amount;
+    user2.balance = receiver[0].balance;
+    existingGroup.paymentGraph = makePaymentGraph(transaction.gid, existingGroup);
+    console.log(userBalances, existingGroup.paymentGraph);
+    await existingGroup.save();
+    await user1.save();
+    await user2.save();
 }
 
 module.exports = this;

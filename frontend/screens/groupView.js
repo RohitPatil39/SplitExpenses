@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, ScrollView } from 'react-native';
 
-const GroupsScreen = ({ navigation }) => {
+const GroupView = ({ navigation }) => {
     const [groups, setGroups] = useState([]);
 
     const createGroup = () => {
@@ -105,112 +105,4 @@ const GroupsScreen = ({ navigation }) => {
     );
 };
 
-const styles = StyleSheet.create({
-    page: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'hsla(111, 0%, 31%, 1)'
-    },
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: "row-reverse",
-        padding: 20
-    },
-    horizontalSection: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 4,
-    },
-    verticalSection: {
-        flex: 1,
-        margin: 5
-    },
-    title: {
-        color: 'white',
-        fontSize: 20,
-        fontWeight: 'bold',
-        paddingTop: 10,
-        marginBottom: 20,
-    },
-    scrollContainer: {
-        flex: 1,
-    },
-    groupContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        width: "500",
-        backgroundColor: 'hsla(111, 0%, 17%, 1)',
-        padding: 20,
-        borderRadius: 10,
-        marginBottom: 20,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    groupTitle: {
-        color: 'white',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    groupDescription: {
-        color: 'white',
-        marginBottom: 10,
-    },
-    usersContainer: {
-        marginTop: 10,
-    },
-    usersLabel: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 5,
-    },
-    user: {
-        color: 'white',
-        fontSize: 14,
-    },
-    userBalancesContainer: {
-        marginTop: 10,
-    },
-    userBalancesLabel: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 5,
-    },
-    userBalance: {
-        color: 'white',
-        fontSize: 18,
-        paddingBottom: 10
-    },
-    refreshButton: {
-        position: 'absolute',
-        bottom: 30,
-        right: 25,
-        backgroundColor: 'hsla(111, 0%, 65%, 1)',
-        padding: 10,
-        borderRadius: 7,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 2,
-            height: 2,
-        },
-        shadowOpacity: 0.05,
-        shadowRadius: 4.84,
-        elevation: 6,
-    },
-    buttonText: {
-        color: 'black',
-        backgroundColor:'hsla(111, 0%, 65%, 1)'
-    },
-});
-
-export default GroupsScreen;
+export default GroupView;
