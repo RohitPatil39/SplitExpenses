@@ -15,6 +15,9 @@ const userSchema = new mongoose.Schema({
   groups: {
     type: [String]
   },
+  balance: {
+    type: Number,
+  }
 });
 
 // Create the User model
