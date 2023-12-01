@@ -113,7 +113,7 @@ router.post("/addexpense", async (req, res) => {
     const expense = await Expense.save();
     const expenseId = expense._id;
     console.log("gid", req.body.gid)
-    dbOperations.addExpenseToGroup(req.body.gid, expenseId, Expense.uid, Expense.amount);
+    await dbOperations.addExpenseToGroup(req.body.gid, expenseId, Expense.uid, Expense.amount);
     res.json(expense);
 
   } catch (err) {

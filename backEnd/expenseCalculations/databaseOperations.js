@@ -28,6 +28,7 @@ this.addExpenseToGroup = async function (gid, eid, uid, amount) {
             if (user.uid !== uid) {
                 console.log("1")
                 var userbalance = userBalances.find((entry) => entry.uid === user.uid);
+                console.log(userBalances,"......................");
                 if (userbalance) {
                     console.log("2")
                     userbalance.balance -= splitAmount;
@@ -58,15 +59,12 @@ this.addExpenseToGroup = async function (gid, eid, uid, amount) {
         existingGroup.userBalances = userBalances;
         existingGroup.paymentGraph = [];
         console.log("pg................................",gid,existingGroup)
-        var payments = makePaymentGraph(gid, existingGroup);
+        var payments = await makePaymentGraph(gid, existingGroup);
         console.log(payments)
         for (const paymentNode of payments) {
             console.log(paymentNode)
             existingGroup.paymentGraph.push({ from: paymentNode.from, to: paymentNode.to, balance: paymentNode.balance });
         }
-
-        // Update existingGroup.paymentGraph.type with values from paymentNodes
-        // existingGroup.paymentGraph.type = paymentNodes.map(node => mapPaymentGraph(node.from, node.to, node.balance));
 
         await existingGroup.save();
 
