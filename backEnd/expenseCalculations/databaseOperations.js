@@ -8,8 +8,9 @@ const expenseModel = require("../models/Expense");
 this.addExpenseToGroup = async function (gid, eid, uid, amount) {
     try {
         const existingGroup = await groupModel.findById(gid);
+        console.log(".............................",existingGroup)
         existingGroup.expenses.push(eid);
-
+        // console.log("don")
         var groupUserIds = existingGroup.users;
         var groupUsers = [];
         for (const uid of groupUserIds) {
@@ -21,6 +22,8 @@ this.addExpenseToGroup = async function (gid, eid, uid, amount) {
         // console.log(totalMembers)
         var splitAmount = amount / totalMembers;
         // console.log()
+
+        console.log("...................................users", uid)
         for (const user of groupUsers) {
             if (user.uid !== uid) {
                 console.log("1")
@@ -38,15 +41,15 @@ this.addExpenseToGroup = async function (gid, eid, uid, amount) {
                 console.log("4")
                 var userbalance = userBalances.find((entry) => entry.uid === user.uid);
                 if (userbalance) {
-                    console.log("5")
-                    userbalance.balance += amount - splitAmount;
+                    // console.log("5")
+                    userbalance.balance += (amount - splitAmount);
                     user.balance += amount - splitAmount;
                 } else {
-                    console.log("6")
-                    userBalances.push({ uid: user.uid, balance: amount - splitAmount });
-                    console.log("7")
-                    user.balance = amount - splitAmount;
-                    console.log("8")
+                    // console.log("6")
+                    userBalances.push({ uid: user.uid, balance: (amount - splitAmount) });
+                    // console.log("7")
+                    user.balance = (amount - splitAmount);
+                    // console.log("8")
                 }
             }
             user.save();
@@ -54,11 +57,12 @@ this.addExpenseToGroup = async function (gid, eid, uid, amount) {
 
         existingGroup.userBalances = userBalances;
         existingGroup.paymentGraph = [];
+        console.log("pg................................",gid,existingGroup)
         var payments = makePaymentGraph(gid, existingGroup);
         console.log(payments)
         for (const paymentNode of payments) {
             console.log(paymentNode)
-            existingGroup.paymentGraph.push({ from: paymentNode.from, to: paymentNode.to, balance: paymentNode.balance});
+            existingGroup.paymentGraph.push({ from: paymentNode.from, to: paymentNode.to, balance: paymentNode.balance });
         }
 
         // Update existingGroup.paymentGraph.type with values from paymentNodes
@@ -80,7 +84,7 @@ function makePaymentGraph(gid, group) {
     // Separate lenders and borrowers
     var lenders = userBalances.filter(user => user.balance > 0);
     var borrowers = userBalances.filter(user => user.balance < 0);
-
+console.log(lenders)
     var lenders = lenders.map(item => ({
         uid: item.uid,
         balance: Math.abs(item.balance),

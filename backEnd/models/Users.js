@@ -15,6 +15,11 @@ const userSchema = new mongoose.Schema({
   groups: {
     type: [String]
   },
+  password: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   balance: {
     type: Number,
   }

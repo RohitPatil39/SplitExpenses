@@ -10,12 +10,43 @@ router.use(express.json());
 router.post("/adduser", async (req, res) => {
   const User = new userModel({
     username: req.body.username,
+    password: req.body.password,
     uid: req.body.uid,
-    balance: 0
   });
   try {
-    const user = User.save();
+    console.log("user");
+    console.log(User)
+    const user = await User.save();
+    // console.log("asa                   ..........................................", user);
     res.json(user);
+  } catch (err) {
+    res.send("Error" + err);
+  }
+});
+
+router.post("/login", async (req, res) => {
+  try {
+    const result = {
+      authenticated: true,
+      username: "username"
+    };
+    var userinp = req.body.username;
+    var p = req.body.password;
+    console.log(userinp, p, "...........................")
+    var isUser = await userModel.findOne({ password: p, username: userinp })
+    // console.log("is", isUser, await userModel.findOne({ username: userinp }))
+    if (isUser) {
+      console.log(isUser)
+      result.username = isUser.uid
+      result.authenticated = true;
+      res.send(result)
+
+      console.log("isUser", result)
+    } else {
+      result.authenticated = false;
+      res.send(result)
+    }
+    //
   } catch (err) {
     res.send("Error" + err);
   }
@@ -44,8 +75,9 @@ router.post("/creategroup", async (req, res) => {
     const group = await Group.save();
     const gid = group._id;
     console.log(gid);
-    dbOperations.addGroupUnderUser(req.body.users, gid);
+    await dbOperations.addGroupUnderUser(req.body.users, gid);
     res.json(group);
+    console.log(".............................done.......................")
   } catch (err) {
     res.send("Error" + err);
   }
@@ -80,6 +112,7 @@ router.post("/addexpense", async (req, res) => {
   try {
     const expense = await Expense.save();
     const expenseId = expense._id;
+    console.log("gid", req.body.gid)
     dbOperations.addExpenseToGroup(req.body.gid, expenseId, Expense.uid, Expense.amount);
     res.json(expense);
 

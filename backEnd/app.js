@@ -12,7 +12,7 @@ app.use("/splitter", spiltterRouter);
 // const pass = configiration.password;
 const uri =
   "mongodb+srv://Bits-Expense-Splitter:" +
-  process.env.PASSWORD +
+  "CGX5x2wbqA3tcUN1" +
   "@cluster0.z70uixj.mongodb.net/ExpenseSplitter?retryWrites=true&w=majority";
 
 app.use(helmet());
@@ -28,7 +28,7 @@ mongoose
   })
   .then(() => {
     console.log("db Connected succesfully..");
-    app.listen(process.env.PORT, () => {
+    app.listen(3000, () => {
       console.log(`Server is running on port 3000`);
     });
   })
